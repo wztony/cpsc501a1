@@ -19,11 +19,11 @@ public class SoilMoistureController extends Controller {
 	 * lower than the ambient moisture, it is impossible to achieve the desired
 	 * moisture because we can only turn the sprinkler on and off.
 	 */
-	public void onActivity(){
+	public void determineActivity(){
 		double dr = this.getDesiredRate();
 		double c = this.getCurrentState();
 		double d = this.getDesiredState();
-		double lb = this.getLowerBound();
+		double lb = this.getDesiredLowerBound();
 		boolean activity;
 		
 		if (dr == 0){
@@ -41,9 +41,9 @@ public class SoilMoistureController extends Controller {
 		this.setActivity(activity);
 	}
 	
-	public void running(){
-		onActivity();
-		updateRate();
-		update();
+	public void runSimulation(){
+		determineActivity();
+		updateRates();
+		simulateActivity();
 	}
 }

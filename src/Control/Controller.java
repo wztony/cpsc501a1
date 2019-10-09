@@ -26,11 +26,11 @@ public class Controller extends Thread{
 	/**
 	 * upper bound 
 	 */
-	private double upperBound;
+	private double desiredUpperBound;
 	/**
 	 * lower bound 
 	 */
-	private double lowerBound;
+	private double desiredLowerBound;
 	/**
 	 * refresh rate 
 	 */
@@ -42,11 +42,11 @@ public class Controller extends Thread{
 	/**
 	 * maximum state
 	 */
-	private double maxBound;
+	private double maxState;
 	/**
 	 * minimum state
 	 */
-	private double minBound;
+	private double minState;
 	/**
 	 * state's rate of change
 	 */
@@ -110,11 +110,11 @@ public class Controller extends Thread{
 		this.setAmbientRate(ambientRate);
 		this.setDesiredState(desiredState);
 		this.setDesiredRate(desiredRate);
-		this.setUpperBound(upperBound);
-		this.setLowerBound(lowerBound);
+		this.setDesiredUpperBound(upperBound);
+		this.setDesiredLowerBound(lowerBound);
 		this.setRefresh(refresh);
-		this.setMinBound(minBound);
-		this.setMaxBound(maxBound);
+		this.setMinState(minBound);
+		this.setMaxState(maxBound);
 		this.setActivity(false);
 	}
 	
@@ -128,8 +128,8 @@ public class Controller extends Thread{
 		this.setAmbientRate(0);
 		this.setDesiredState(0);
 		this.setDesiredRate(0);
-		this.setUpperBound(0);
-		this.setLowerBound(0);
+		this.setDesiredUpperBound(0);
+		this.setDesiredLowerBound(0);
 		this.setRefresh(1);
 		this.setActivity(false);
 	}
@@ -173,15 +173,15 @@ public class Controller extends Thread{
 	 * method that takes a double as parameter and sets it as upperBound
 	 * @param upperBound upper bound
 	 */
-	public void setUpperBound(double upperBound){
-		this.upperBound = Math.abs(upperBound);
+	public void setDesiredUpperBound(double upperBound){
+		this.desiredUpperBound = Math.abs(upperBound);
 	}
 	/**
 	 * method that takes a double as parameter and sets it as lowerBound
 	 * @param lowerBound lower bound
 	 */
-	public void setLowerBound(double lowerBound){
-		this.lowerBound = Math.abs(lowerBound);
+	public void setDesiredLowerBound(double lowerBound){
+		this.desiredLowerBound = Math.abs(lowerBound);
 	}
 	/**
 	 * method that takes a double as parameter and sets it as refresh and
@@ -204,15 +204,15 @@ public class Controller extends Thread{
 	 * method that takes a double as parameter and sets it as maxBound
 	 * @param maxBound maximum state
 	 */
-	public void setMaxBound(double maxBound) {
-		this.maxBound = maxBound;
+	public void setMaxState(double maxBound) {
+		this.maxState = maxBound;
 	}
 	/**
 	 * method that takes a double as parameter and sets it as minBound
 	 * @param minBound minimum stare
 	 */
-	public void setMinBound(double minBound) {
-		this.minBound = minBound;
+	public void setMinState(double minBound) {
+		this.minState = minBound;
 	}
 	/**
 	 * method that takes a boolean as parameter and sets it activity
@@ -262,15 +262,15 @@ public class Controller extends Thread{
 	 * method that returns upperBound as a double
 	 * @return upperBound
 	 */
-	public double getUpperBound(){
-		return upperBound;
+	public double getDesiredUpperBound(){
+		return desiredUpperBound;
 	}
 	/**
 	 * method that returns lowerBound as a double
 	 * @return lowerBound
 	 */
-	public double getLowerBound(){
-		return lowerBound;
+	public double getDesiredLowerBound(){
+		return desiredLowerBound;
 	}
 	/**
 	 * method that returns refresh as a double
@@ -290,15 +290,15 @@ public class Controller extends Thread{
 	 * method that returns maxBound as a double
 	 * @return maxBound
 	 */
-	public double getMaxBound() {
-		return maxBound;
+	public double getMaxState() {
+		return maxState;
 	}
 	/**
 	 * method that returns minBound as a double
 	 * @return minBound
 	 */
-	public double getMinBound() {
-		return minBound;
+	public double getMinState() {
+		return minState;
 	}
 	/**
 	 * method that returns activity as a boolean
@@ -400,7 +400,7 @@ public class Controller extends Thread{
 	/**
 	 * method that calls the methods updateAmbientRate and updateDesiredRate
 	 */
-	public void updateRate(){
+	public void updateRates(){
 		updateAmbientRate();
 		updateDesiredRate();
 	}
@@ -408,7 +408,7 @@ public class Controller extends Thread{
 	/**
 	 * method that updates the currentState and delta.
 	 */
-	public void update(){
+	public void simulateActivity(){
 		double c = this.currentState;
 		double a = this.ambientState;
 		//double d = this.desiredState;
@@ -416,12 +416,12 @@ public class Controller extends Thread{
 		double dr = this.desiredRate/(60/refresh);
 		//double ub = this.upperBound;
 		//double lb = this.lowerBound;
-		double max = this.maxBound;
-		double min = this.minBound;
+		double max = this.maxState;
+		double min = this.minState;
 		
 		
 		if(!this.getActivity()) {
-			if (Math.abs(a-c) < ar) {
+			if (Math.abs(a-c) < Math.abs(ar)) {
 				c = a;
 			}
 			else {
@@ -451,14 +451,14 @@ public class Controller extends Thread{
 	/**
 	 * method that sets the ie.humidifier on or off.
 	 */
-	public void onActivity(){
+	public void determineActivity(){
 		if (this.desiredRate == 0){
 			this.activity = false;
 		}
-		else if (this.currentState - this.desiredState > this.upperBound){
+		else if (this.currentState - this.desiredState > this.desiredUpperBound){
 			this.activity = true;
 		}
-		else if (this.desiredState - this.currentState > this.lowerBound){
+		else if (this.desiredState - this.currentState > this.desiredLowerBound){
 			this.activity = true;
 		}
 		else {
@@ -470,10 +470,10 @@ public class Controller extends Thread{
 	 * method that calls the methods onActivity, updateRate, and update. It is
 	 * the main running method of a controller, ie. humidifier, sprinkler
 	 */
-	public void running(){
-		onActivity();
-		updateRate();
-		update();
+	public void runSimulation(){
+		determineActivity();
+		updateRates();
+		simulateActivity();
 	}
 	
 	/**
@@ -486,7 +486,7 @@ public class Controller extends Thread{
 		try{
 			for(;;){
 				if (!pause) {
-					running();
+					runSimulation();
 					Thread.sleep(delay*(int)getRefresh());
 				}
 				else {

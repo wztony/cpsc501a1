@@ -6,7 +6,7 @@ public class ThermostatThreadGetter extends Thread{
 	public boolean start = false;
 	public boolean on = true;
 	public Controller control;
-	public Window guiWin;
+	public Window windowGUI;
 	public DecimalFormat df = new DecimalFormat("#,###,##0.0000");
 	
 	public ThermostatThreadGetter(){
@@ -16,7 +16,7 @@ public class ThermostatThreadGetter extends Thread{
 	public ThermostatThreadGetter(int delay,Controller C,Window W){
 		this.delay = delay * 1000;
 		this.control = C;
-		this.guiWin = W;
+		this.windowGUI = W;
 	}
 	/**
 	 * method to return start as boolean
@@ -78,7 +78,7 @@ public class ThermostatThreadGetter extends Thread{
 	 * @param W Window
 	 */
 	public void setWindow(Window W){
-		guiWin = W;
+		windowGUI = W;
 	}
 	
 	
@@ -89,33 +89,33 @@ public class ThermostatThreadGetter extends Thread{
 	public void run(){
 		try{
 			while(start){
-				control.updateRate();
-				guiWin.setLblCurrentTemp(df.format(control.getCurrentState()));
+				control.updateRates();
+				windowGUI.setTemperatureLabel(df.format(control.getCurrentState()));
 				if (control.getDelta() >= 0){
-					guiWin.setLblTempUpdateRate("+" + df.format(control.getDelta()/control.getRefresh()));
+					windowGUI.setTemperatureRateLabel("+" + df.format(control.getDelta()/control.getRefresh()));
 				}
 				else {
-					guiWin.setLblTempUpdateRate(df.format(control.getDelta()/control.getRefresh()));
+					windowGUI.setTemperatureRateLabel(df.format(control.getDelta()/control.getRefresh()));
 				}
 				
 				
-				guiWin.setLblTempLimitLower(df.format(control.getDesiredState() + control.getUpperBound()));
-				guiWin.setLblTempLimitUpper(df.format(control.getDesiredState() - control.getLowerBound()));
+				windowGUI.setTemperatureLowerLabel(df.format(control.getDesiredState() + control.getDesiredUpperBound()));
+				windowGUI.setTemperatureUpperLabel(df.format(control.getDesiredState() - control.getDesiredLowerBound()));
 				if (control.getActivity()){
-					guiWin.setThermostatOn();
+					windowGUI.setThermostatOn();
 					if (control.getDesiredRate() > 0){
-						guiWin.setFurnaceOn();
+						windowGUI.setHeaterOn();
 					}
 					else if (control.getDesiredRate() < 0){
-						guiWin.setAirConditionerOn();
+						windowGUI.setAirConditionerOn();
 					}
 					else {
-						guiWin.setACAndFOff();
+						windowGUI.setACAndHeaterOff();
 					}
 				}
 				else {
-					guiWin.setThermostatOff();
-					guiWin.setACAndFOff();
+					windowGUI.setThermostatOff();
+					windowGUI.setACAndHeaterOff();
 				}
 				Thread.sleep(delay);
 			}

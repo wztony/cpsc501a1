@@ -6,7 +6,7 @@ public class HumidifierThreadGetter extends Thread{
 	public boolean start = false;
 	public boolean on = true;
 	public Controller control;
-	public Window guiWin;
+	public Window windowGUI;
 	public DecimalFormat df = new DecimalFormat("#,###,##0.0000");
 	
 	public HumidifierThreadGetter(){
@@ -16,7 +16,7 @@ public class HumidifierThreadGetter extends Thread{
 	public HumidifierThreadGetter(int delay,Controller C,Window W){
 		this.delay = delay * 1000;
 		this.control = C;
-		this.guiWin = W;
+		this.windowGUI = W;
 	}
 	
 	public boolean getStart(){
@@ -49,7 +49,7 @@ public class HumidifierThreadGetter extends Thread{
 	}
 	
 	public void setWindow(Window W){
-		guiWin = W;
+		windowGUI = W;
 	}
 	
 	
@@ -57,21 +57,21 @@ public class HumidifierThreadGetter extends Thread{
 	public void run(){
 		try{
 			while(start){
-				guiWin.setLblCurrentHumi(df.format(control.getCurrentState()));
+				windowGUI.setHumidityLabel(df.format(control.getCurrentState()));
 				if (control.getDelta() >= 0){
-					guiWin.setLblHumiUpdateRate("+" + df.format(control.getDelta()));
+					windowGUI.setHumidityRateLabel("+" + df.format(control.getDelta()));
 				}
 				else {
-					guiWin.setLblHumiUpdateRate(df.format(control.getDelta()));
+					windowGUI.setHumidityRateLabel(df.format(control.getDelta()));
 				}
 				
-				guiWin.setLblHumiLimitLower(df.format(control.getDesiredState() + control.getUpperBound()));
-				guiWin.setLblHumiLimitUpper(df.format(control.getDesiredState() - control.getLowerBound()));
+				windowGUI.setHumidityLowerLabel(df.format(control.getDesiredState() + control.getDesiredUpperBound()));
+				windowGUI.setHumidityUpperLabel(df.format(control.getDesiredState() - control.getDesiredLowerBound()));
 				if (control.getActivity()){
-					guiWin.setHumidifierOn();
+					windowGUI.setHumidifierOn();
 				}
 				else {
-					guiWin.setHumidifierOff();
+					windowGUI.setHumidifierOff();
 				}
 				Thread.sleep(delay);
 			}
