@@ -8,11 +8,11 @@ public class Controller extends Thread{
 	 */
 	private double currentState;
 	/**
-	 * ambient state
+	 * ambientState state
 	 */
 	private double ambientState;
 	/**
-	 * ambient rate 
+	 * ambientState rate 
 	 */
 	private double ambientRate;
 	/**
@@ -94,8 +94,8 @@ public class Controller extends Thread{
 	 * upperBound, lowerBound, refresh, minBound, and maxBound.
 	 * It also sets boolean activity false, setting the ie. humidifier as off.
 	 * @param currentState current state
-	 * @param ambientState ambient state
-	 * @param ambientRate ambient rate
+	 * @param ambientState ambientState state
+	 * @param ambientRate ambientState rate
 	 * @param desiredState desired state
 	 * @param desiredRate desired rate
 	 * @param upperBound upper bound
@@ -146,14 +146,14 @@ public class Controller extends Thread{
 	}
 	/**
 	 * method that takes a double as parameter and sets it as ambientState
-	 * @param ambientState ambient state
+	 * @param ambientState ambientState state
 	 */
 	public void setAmbientState(double ambientState){
 		this.ambientState = ambientState;
 	}
 	/**
 	 * method that takes a double as parameter and sets it as ambientRate
-	 * @param ambientRate ambient rate
+	 * @param ambientRate ambientState rate
 	 */
 	public void setAmbientRate(double ambientRate){
 		this.ambientRate = ambientRate;
@@ -408,46 +408,43 @@ public class Controller extends Thread{
 		updateDesiredRate();
 	}
 	
+	public double getAugmentedAR() {
+		return ambientRate/(60/refresh);
+	}
+	
+	public double getAugmentedDR() {
+		return desiredRate/(60/refresh);
+	}
+	
 	/**
 	 * method that updates the currentState and delta.
 	 */
 	public void simulateActivity(){
-		double c = this.currentState;
-		double a = this.ambientState;
-		//double d = this.desiredState;
-		double ar = this.ambientRate/(60/refresh);
-		double dr = this.desiredRate/(60/refresh);
-		//double ub = this.upperBound;
-		//double lb = this.lowerBound;
-		double max = this.maxState;
-		double min = this.minState;
-		
-		
+		double current = currentState;
 		if(!this.getActivity()) {
-			if (Math.abs(a-c) < Math.abs(ar)) {
-				c = a;
+			if (Math.abs(ambientState - currentState) < Math.abs(getAugmentedAR())) {
+				currentState = ambientState;
 			}
 			else {
-				c = c + ar;
+				currentState = currentState + getAugmentedAR();
 			}
 		}
 		else {
-			if (Math.abs(a-c) < ar) {
-				c = a;
-				c = c + dr;
+			if (Math.abs(ambientState-currentState) < getAugmentedAR()) {
+				currentState = ambientState;
+				currentState = currentState + getAugmentedDR();
 			}
 			else {
-				c = c + ar + dr;
+				currentState = currentState + getAugmentedAR() + getAugmentedDR();
 			}
 		}
-		if (c < min) {
-			c = min;
+		if (currentState < minState) {
+			currentState = minState;
 		}
-		else if(c > max) {
-			c = max;
+		else if(currentState > maxState) {
+			currentState = maxState;
 		}
-		setDelta(c - currentState);
-		this.currentState = c;
+		setDelta(currentState - current);
 	}
 	
 	
