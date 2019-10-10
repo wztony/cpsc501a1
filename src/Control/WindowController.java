@@ -9,18 +9,18 @@ public class WindowController implements ActionListener{
 	//Create new Controller for temperature, soil moisture, and humidity
 	//Set the max and min limit, ie -217C for absolute zero, ie. 0 and 100%
 	//for min and max moisture and humidity.
-	private TemperatureController temperatureController = new TemperatureController();
-	private SoilMoistureController moistureController = new SoilMoistureController();
-	private HumidityController humidityController = new HumidityController();
+	private Controller temperatureController = new Controller();
+	private OneWayController moistureController = new OneWayController();
+	private OneWayController humidityController = new OneWayController();
 	//Create new Window
 	private Window windowGUI = new Window();
 	private int eventNumber;
 	private PrintWriter printWriter;
 	
 	//Create new updater of Window. One for each Controller.
-	private ThermostatThreadGetter getTemp = new ThermostatThreadGetter();
-	private SprinklerThreadGetter getSoilMois = new SprinklerThreadGetter();
-	private HumidifierThreadGetter getHumi = new HumidifierThreadGetter();
+	private ThermostatThreadGetter thermostatThreadGetter = new ThermostatThreadGetter();
+	private SprinklerThreadGetter sprinklerThreadGetter = new SprinklerThreadGetter();
+	private HumidifierThreadGetter humidifierThreadGetter = new HumidifierThreadGetter();
 	
 	//Constructor that activates all action listeners
 	public WindowController(){
@@ -67,14 +67,14 @@ public class WindowController implements ActionListener{
 			temperatureController.start();
 			temperatureController.setStartTrue();
 		}
-		if (!getTemp.getStart()){
-			getTemp.start();
-			getTemp.setStartTrue();
+		if (!thermostatThreadGetter.getStart()){
+			thermostatThreadGetter.start();
+			thermostatThreadGetter.setStartTrue();
 		}
 		//Link updater to its controller and set refresh rate
-		getTemp.setController(temperatureController);
-		getTemp.setWindow(windowGUI);
-		getTemp.setDelay((int)temperatureController.getRefresh());
+		thermostatThreadGetter.setController(temperatureController);
+		thermostatThreadGetter.setWindow(windowGUI);
+		thermostatThreadGetter.setDelay((int)temperatureController.getRefresh());
 		
 		
 		//If the controller and updater are not running, start running.
@@ -83,14 +83,14 @@ public class WindowController implements ActionListener{
 			moistureController.start();
 			moistureController.setStartTrue();
 		}
-		if (!getSoilMois.getStart()){
-			getSoilMois.start();
-			getSoilMois.setStartTrue();
+		if (!sprinklerThreadGetter.getStart()){
+			sprinklerThreadGetter.start();
+			sprinklerThreadGetter.setStartTrue();
 		}
 		//Link updater to its controller and set refresh rate
-		getSoilMois.setController(moistureController);
-		getSoilMois.setWindow(windowGUI);
-		getSoilMois.setDelay((int)moistureController.getRefresh());
+		sprinklerThreadGetter.setController(moistureController);
+		sprinklerThreadGetter.setWindow(windowGUI);
+		sprinklerThreadGetter.setDelay((int)moistureController.getRefresh());
 		
 		
 		//If the controller and updater are not running, start running.
@@ -99,14 +99,14 @@ public class WindowController implements ActionListener{
 			humidityController.start();
 			humidityController.setStartTrue();
 		}
-		if (!getHumi.getStart()){
-			getHumi.start();
-			getHumi.setStartTrue();
+		if (!humidifierThreadGetter.getStart()){
+			humidifierThreadGetter.start();
+			humidifierThreadGetter.setStartTrue();
 		}
 		//Link updater to its controller and set refresh rate
-		getHumi.setController(humidityController);
-		getHumi.setWindow(windowGUI);
-		getHumi.setDelay((int)humidityController.getRefresh());
+		humidifierThreadGetter.setController(humidityController);
+		humidifierThreadGetter.setWindow(windowGUI);
+		humidifierThreadGetter.setDelay((int)humidityController.getRefresh());
 		
 		
 		switch(eventNumber){	

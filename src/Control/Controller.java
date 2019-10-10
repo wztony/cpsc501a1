@@ -71,6 +71,9 @@ public class Controller extends Thread{
 	private boolean start = false;
 	
 	
+	public Controller() {
+		this(0,0,0,0,0,0,0,1,-271,1000000);
+	}
 
 	
 	/**

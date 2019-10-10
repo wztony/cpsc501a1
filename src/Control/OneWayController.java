@@ -1,21 +1,13 @@
 package Control;
 
-public class HumidityController extends Controller {
-	
-	public HumidityController(double currentState, double ambientState, 
-			double ambientRate, double desiredState, double desiredRate,
-			double upperBound, double lowerBound, double refresh, double 
-			maxBound, double minBound){
-		super(currentState,ambientState,ambientRate,desiredState,desiredRate,
-				upperBound,lowerBound,refresh,maxBound,minBound);
-	}
-	
-	public HumidityController(){
-		super(0,0,0,0,0,0,0,1,0,100);
+public class OneWayController extends Controller {
+
+	public OneWayController() {
+		super(0,100);
 	}
 	
 	/**
-	 * method that sets the humidifier on or off. If the desired moisture is 
+	 * method that sets the eg. humidifier on or off. If the desired moisture is 
 	 * lower than the ambient humidity, it is impossible to achieve the desired
 	 * humidity because we can only turn the humidifier on and off.
 	 */
