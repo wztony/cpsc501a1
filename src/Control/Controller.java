@@ -8,11 +8,11 @@ public class Controller extends Thread{
 	 */
 	private double currentState;
 	/**
-	 * ambientState state
+	 * ambient state
 	 */
 	private double ambientState;
 	/**
-	 * ambientState rate 
+	 * ambient rate 
 	 */
 	private double ambientRate;
 	/**
@@ -94,8 +94,8 @@ public class Controller extends Thread{
 	 * upperBound, lowerBound, refresh, minBound, and maxBound.
 	 * It also sets boolean activity false, setting the ie. humidifier as off.
 	 * @param currentState current state
-	 * @param ambientState ambientState state
-	 * @param ambientRate ambientState rate
+	 * @param ambientState ambient state
+	 * @param ambientRate ambient rate
 	 * @param desiredState desired state
 	 * @param desiredRate desired rate
 	 * @param upperBound upper bound
@@ -146,14 +146,14 @@ public class Controller extends Thread{
 	}
 	/**
 	 * method that takes a double as parameter and sets it as ambientState
-	 * @param ambientState ambientState state
+	 * @param ambientState ambient state
 	 */
 	public void setAmbientState(double ambientState){
 		this.ambientState = ambientState;
 	}
 	/**
 	 * method that takes a double as parameter and sets it as ambientRate
-	 * @param ambientRate ambientState rate
+	 * @param ambientRate ambient rate
 	 */
 	public void setAmbientRate(double ambientRate){
 		this.ambientRate = ambientRate;

@@ -177,5 +177,97 @@ class ControllerTest {
 		oneWayController.updateDesiredRate();
 		assertEquals(positiveDR, oneWayController.getDesiredRate());
 	}
+	
+	@Test
+	void testSimulateActivity1() {
+		Controller temperatureController = new Controller();
+		temperatureController.setActivity(true);
+		temperatureController.setRefresh(1);
+
+		temperatureController.setCurrentState(lowerValue);
+		temperatureController.setDesiredState(higherValue);
+		temperatureController.setDesiredRate(60);
+		temperatureController.setAmbientRate(0);
+		temperatureController.updateRates();
+		temperatureController.simulateActivity();
+		assertEquals(lowerValue+1, temperatureController.getCurrentState());
+		
+	}
+	
+	@Test
+	void testSimulateActivity2() {
+		Controller temperatureController = new Controller();
+		temperatureController.setActivity(true);
+		temperatureController.setRefresh(1);
+		temperatureController.setCurrentState(higherValue);
+		temperatureController.setDesiredState(lowerValue);
+		temperatureController.setDesiredRate(60);
+		temperatureController.setAmbientRate(0);
+		temperatureController.updateRates();
+		temperatureController.simulateActivity();
+		assertEquals(higherValue-1, temperatureController.getCurrentState());
+		
+	}
+	
+	@Test
+	void testSimulateActivity3() {
+		Controller temperatureController = new Controller();
+		temperatureController.setActivity(true);
+		temperatureController.setRefresh(1);
+		
+		temperatureController.setCurrentState(lowerValue);
+		temperatureController.setDesiredState(higherValue);
+		temperatureController.setAmbientState(higherValue);
+		temperatureController.setDesiredRate(30);
+		temperatureController.setAmbientRate(30);
+		temperatureController.updateRates();
+		temperatureController.simulateActivity();
+		assertEquals(lowerValue+1, temperatureController.getCurrentState());
+	}
+	
+	@Test
+	void testSimulateActivity4() {
+		Controller temperatureController = new Controller();
+		temperatureController.setActivity(true);
+		temperatureController.setRefresh(1);
+		
+		temperatureController.setCurrentState(higherValue);
+		temperatureController.setDesiredState(lowerValue);
+		temperatureController.setAmbientState(lowerValue);
+		temperatureController.setDesiredRate(30);
+		temperatureController.setAmbientRate(30);
+		temperatureController.updateRates();
+		temperatureController.simulateActivity();
+		assertEquals(higherValue-1, temperatureController.getCurrentState());	
+	}
+	
+	@Test
+	void testSimulateActivity5() {
+		Controller temperatureController = new Controller();
+		temperatureController.setActivity(false);
+		temperatureController.setRefresh(1);
+	
+		temperatureController.setCurrentState(higherValue);
+		temperatureController.setAmbientState(lowerValue);
+		temperatureController.setAmbientRate(60);
+		temperatureController.updateRates();
+		temperatureController.simulateActivity();
+		assertEquals(higherValue-1, temperatureController.getCurrentState());
+	}
+	
+	@Test
+	void testSimulateActivity6() {
+		Controller temperatureController = new Controller();
+		temperatureController.setActivity(false);
+		temperatureController.setRefresh(1);
+		
+		temperatureController.setCurrentState(lowerValue);
+		temperatureController.setAmbientState(higherValue);
+		temperatureController.setAmbientRate(60);
+		temperatureController.updateRates();
+		temperatureController.simulateActivity();
+		assertEquals(lowerValue+1, temperatureController.getCurrentState());
+		
+	}
 
 }
