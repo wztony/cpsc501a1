@@ -59,7 +59,7 @@ public class WindowController implements ActionListener{
 	//When any button is pressed
 	public void actionPerformed(ActionEvent e) {
 		eventNumber = Integer.parseInt(e.getActionCommand());
-		System.out.println(eventNumber);
+		//System.out.println(eventNumber);
 		
 		//If the controller and updater are not running, start running.
 		//If they are already running, do nothing.
