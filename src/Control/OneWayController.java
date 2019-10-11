@@ -33,9 +33,5 @@ public class OneWayController extends Controller {
 		this.setActivity(activity);
 	}
 	
-	public void runSimulation(){
-		determineActivity();
-		updateRates();
-		simulateActivity();
-	}
+	
 }

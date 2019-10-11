@@ -11,10 +11,10 @@ public class ThermostatThreadGetter extends ThreadGetter{
 				control.updateRates();
 				windowGUI.setTemperatureLabel(df.format(control.getCurrentState()));
 				if (control.getDelta() >= 0){
-					windowGUI.setTemperatureRateLabel("+" + df.format(control.getDelta()/control.getRefresh()));
+					windowGUI.setTemperatureRateLabel("+" + df.format(control.getDelta()));
 				}
 				else {
-					windowGUI.setTemperatureRateLabel(df.format(control.getDelta()/control.getRefresh()));
+					windowGUI.setTemperatureRateLabel(df.format(control.getDelta()));
 				}
 				
 				
