@@ -1,0 +1,11 @@
+input temperature: 50.0
+ambient temperature: 60.0
+ambient rate: 15.0
+desired temperature: 55.0
+desired rate: 15.0
+temperature upper bound: 1.0
+temperature lower bound: 1.0
+refresh rate: 2.0
+--------
+current temperature: 52.0000°C
+current rate: +1.0000°C/s

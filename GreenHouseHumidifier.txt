@@ -1,0 +1,11 @@
+input humidity: 10.0
+ambient humidity: 1.0
+ambient rate: 15.0
+desired humidity: 50.0
+desired rate: 30.0
+humidity upper bound: 1.0
+humidity lower bound: 1.0
+refresh rate: 3.0
+--------
+current humidity: 16.0000%
+current rate: +0.7500%/s

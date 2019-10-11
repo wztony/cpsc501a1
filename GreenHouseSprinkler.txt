@@ -1,0 +1,11 @@
+input moisture: 80.0
+ambient moisture: 40.0
+ambient rate: 31.0
+desired moisture: 35.0
+desired rate: 25.0
+moisture upper bound: 2.0
+moisture lower bound: 2.0
+refresh rate: 1.0
+--------
+current moisture: 73.8000%
+current rate: -0.5167%/s

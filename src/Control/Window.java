@@ -844,7 +844,7 @@ public class Window extends JFrame {
 	 * method to get the desired temperature user entered
 	 * @return desired temperature
 	 */
-	public double getDesiredTemperatue(){
+	public double getDesiredTemperature(){
 		return Double.parseDouble(fieldDesiredTemperature.getText());
 	}
 	/**
@@ -1222,7 +1222,7 @@ public class Window extends JFrame {
 	 * method to return string of temperature rate of change
 	 * @return rate of change
 	 */
-	public String getTemperatureRate(){
+	public String getTemperatureRateLabel(){
 		return labelTemperatureUpdateRate.getText();
 	}
 	

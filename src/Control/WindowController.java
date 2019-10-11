@@ -1,9 +1,6 @@
 package Control;
 
 import java.awt.event.*;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 
 public class WindowController implements ActionListener{
 	//Create new Controller for temperature, soil moisture, and humidity
@@ -15,7 +12,7 @@ public class WindowController implements ActionListener{
 	//Create new Window
 	private Window windowGUI = new Window();
 	private int eventNumber;
-	private PrintWriter printWriter;
+	private WriteCurrentState writer;
 	
 	//Create new updater of Window. One for each Controller.
 	private ThermostatThreadGetter thermostatThreadGetter = new ThermostatThreadGetter();
@@ -47,9 +44,145 @@ public class WindowController implements ActionListener{
 		windowGUI.humidifierSave(this);
 		windowGUI.humidifierLoad(this);
 		windowGUI.humidifierReset(this);
+		
+		startTheromstat();
+		startSprinkler();
+		startHumidifier();
+		
+		writer = new WriteCurrentState();
 	}
 	
+	public void startTheromstat() {
+		//If the controller and updater are not running, start running.
+		//If they are already running, do nothing.
+		temperatureController.start();
+		temperatureController.setStartTrue();
+		
+		thermostatThreadGetter.start();
+		thermostatThreadGetter.setStartTrue();
+		
+		//Link updater to its controller and set refresh rate
+		thermostatThreadGetter.setController(temperatureController);
+		thermostatThreadGetter.setWindow(windowGUI);
+		thermostatThreadGetter.setDelay((int)temperatureController.getRefresh());
+	}
 	
+	public void startSprinkler() {
+		//If the controller and updater are not running, start running.
+		//If they are already running, do nothing.
+		moistureController.start();
+		moistureController.setStartTrue();
+		
+		sprinklerThreadGetter.start();
+		sprinklerThreadGetter.setStartTrue();
+		
+		//Link updater to its controller and set refresh rate
+		sprinklerThreadGetter.setController(moistureController);
+		sprinklerThreadGetter.setWindow(windowGUI);
+		sprinklerThreadGetter.setDelay((int)moistureController.getRefresh());
+	}
+	
+	public void startHumidifier() {
+		//If the controller and updater are not running, start running.
+		//If they are already running, do nothing.
+		humidityController.start();
+		humidityController.setStartTrue();
+		
+		humidifierThreadGetter.start();
+		humidifierThreadGetter.setStartTrue();
+		
+		//Link updater to its controller and set refresh rate
+		humidifierThreadGetter.setController(humidityController);
+		humidifierThreadGetter.setWindow(windowGUI);
+		humidifierThreadGetter.setDelay((int)humidityController.getRefresh());
+	}
+	
+	public void setTemperature() {
+		temperatureController.setCurrentState(windowGUI.getInputTemperature());
+	}
+	
+	public void setThermostatVariables() {
+		temperatureController.setAmbientState(windowGUI.getAmbientTemperature());
+		temperatureController.setAmbientRate(windowGUI.getAmbientTemperatureRate());
+		temperatureController.setDesiredState(windowGUI.getDesiredTemperature());
+		temperatureController.setDesiredRate(windowGUI.getDesiredTemperatureRate());
+		temperatureController.setDesiredUpperBound(windowGUI.getDesiredTemperatureUpperBound());
+		temperatureController.setDesiredLowerBound(windowGUI.getDesiredTemperatureLowerBound());
+		temperatureController.setRefresh(windowGUI.getTemperatureRefresh());
+	}
+	
+	public void setMoisture() {
+		moistureController.setCurrentState(windowGUI.getInputMoisture());
+	}
+	
+	public void setSprinklerVariables() {
+		moistureController.setAmbientState(windowGUI.getAmbientMoisture());
+		moistureController.setAmbientRate(windowGUI.getAmbientMoistureRate());
+		moistureController.setDesiredState(windowGUI.getDesiredMoisture());
+		moistureController.setDesiredRate(windowGUI.getDesiredMoistureRate());
+		moistureController.setDesiredUpperBound(windowGUI.getDesiredMoistureUpperBound());
+		moistureController.setDesiredLowerBound(windowGUI.getDesiredMoistureLowerBound());
+		moistureController.setRefresh(windowGUI.getMoistureRefresh());
+	}
+	
+	public void setHumidity() {
+		humidityController.setCurrentState(windowGUI.getInputHumidity());
+	}
+	
+	public void setHumidifierVariables() {
+		humidityController.setAmbientState(windowGUI.getAmbientHumidity());
+		humidityController.setAmbientRate(windowGUI.getAmbientHumidityRate());
+		humidityController.setDesiredState(windowGUI.getDesiredHumidity());
+		humidityController.setDesiredRate(windowGUI.getDesiredHumidityRate());
+		humidityController.setDesiredUpperBound(windowGUI.getDesiredHumidityUpperBound());
+		humidityController.setDesiredLowerBound(windowGUI.getDesiredHumidityLowerBound());
+		humidityController.setRefresh(windowGUI.getHumidityRefresh());
+	}
+	
+	public void saveThermostat() {
+		writer.setFileForController("GreenHouseThermostat.txt", "temperature");
+		double[] thermostatNumbers = {windowGUI.getInputTemperature(), 
+				windowGUI.getAmbientTemperature(), 
+				windowGUI.getAmbientTemperatureRate(),
+				windowGUI.getDesiredTemperature(), 
+				windowGUI.getDesiredTemperatureRate(), 
+				windowGUI.getDesiredTemperatureUpperBound(), 
+				windowGUI.getDesiredTemperatureLowerBound(), 
+				windowGUI.getTemperatureRefresh()};
+		String[] thermostatTexts = {windowGUI.getTemperatureLabel(), 
+				windowGUI.getTemperatureRateLabel()};
+		writer.write(thermostatNumbers, thermostatTexts);
+	}
+	
+	public void saveSprinkler() {
+		writer.setFileForController("GreenHouseSprinkler.txt", "moisture");
+		double[] sprinklerNumbers = {windowGUI.getInputMoisture(), 
+				windowGUI.getAmbientMoisture(), 
+				windowGUI.getAmbientMoistureRate(),
+				windowGUI.getDesiredMoisture(), 
+				windowGUI.getDesiredMoistureRate(), 
+				windowGUI.getDesiredMoistureUpperBound(), 
+				windowGUI.getDesiredMoistureLowerBound(), 
+				windowGUI.getMoistureRefresh()};
+		String[] sprinklerTexts = {windowGUI.getMoistureLabel(), 
+				windowGUI.getMoistureRateLabel()};
+		writer.write(sprinklerNumbers, sprinklerTexts);
+	}
+	
+	public void saveHumidifier() {
+		writer.setFileForController("GreenHouseHumidifier.txt", "humidity");
+		double[] humidifierNumbers = {windowGUI.getInputHumidity(), 
+				windowGUI.getAmbientHumidity(), 
+				windowGUI.getAmbientHumidityRate(),
+				windowGUI.getDesiredHumidity(), 
+				windowGUI.getDesiredHumidityRate(), 
+				windowGUI.getDesiredHumidityUpperBound(), 
+				windowGUI.getDesiredHumidityLowerBound(), 
+				windowGUI.getHumidityRefresh()};
+		String[] humidifierTexts = {windowGUI.getHumidityLabel(), 
+				windowGUI.getHumidityRateLabel()};
+		writer.write(humidifierNumbers, humidifierTexts);
+	}
 	
 	public static void main(String[] args) {
 		//Create new GUI window
@@ -61,66 +194,12 @@ public class WindowController implements ActionListener{
 		eventNumber = Integer.parseInt(e.getActionCommand());
 		//System.out.println(eventNumber);
 		
-		//If the controller and updater are not running, start running.
-		//If they are already running, do nothing.
-		if (!temperatureController.getStart()){
-			temperatureController.start();
-			temperatureController.setStartTrue();
-		}
-		if (!thermostatThreadGetter.getStart()){
-			thermostatThreadGetter.start();
-			thermostatThreadGetter.setStartTrue();
-		}
-		//Link updater to its controller and set refresh rate
-		thermostatThreadGetter.setController(temperatureController);
-		thermostatThreadGetter.setWindow(windowGUI);
-		thermostatThreadGetter.setDelay((int)temperatureController.getRefresh());
-		
-		
-		//If the controller and updater are not running, start running.
-		//If they are already running, do nothing.
-		if (!moistureController.getStart()){
-			moistureController.start();
-			moistureController.setStartTrue();
-		}
-		if (!sprinklerThreadGetter.getStart()){
-			sprinklerThreadGetter.start();
-			sprinklerThreadGetter.setStartTrue();
-		}
-		//Link updater to its controller and set refresh rate
-		sprinklerThreadGetter.setController(moistureController);
-		sprinklerThreadGetter.setWindow(windowGUI);
-		sprinklerThreadGetter.setDelay((int)moistureController.getRefresh());
-		
-		
-		//If the controller and updater are not running, start running.
-		//If they are already running, do nothing.
-		if (!humidityController.getStart()){
-			humidityController.start();
-			humidityController.setStartTrue();
-		}
-		if (!humidifierThreadGetter.getStart()){
-			humidifierThreadGetter.start();
-			humidifierThreadGetter.setStartTrue();
-		}
-		//Link updater to its controller and set refresh rate
-		humidifierThreadGetter.setController(humidityController);
-		humidifierThreadGetter.setWindow(windowGUI);
-		humidifierThreadGetter.setDelay((int)humidityController.getRefresh());
-		
-		
 		switch(eventNumber){	
 		case 1: //Use temperature from text field
-				temperatureController.setCurrentState(windowGUI.getInputTemperature());
+				setTemperature();
 				break;
 		case 2: //Use other variables from text fields
-				temperatureController.setAmbientState(windowGUI.getAmbientTemperature());
-				temperatureController.setAmbientRate(windowGUI.getAmbientTemperatureRate());
-				temperatureController.setDesiredState(windowGUI.getDesiredTemperatue());
-				temperatureController.setDesiredRate(windowGUI.getDesiredTemperatureRate());
-				temperatureController.setDesiredUpperBound(windowGUI.getDesiredTemperatureUpperBound());
-				temperatureController.setDesiredLowerBound(windowGUI.getDesiredTemperatureLowerBound());
-				temperatureController.setRefresh(windowGUI.getTemperatureRefresh());
+				setThermostatVariables();
 				break;
 		case 3: //Run or resume thermostat thread
 				temperatureController.setPauseFalse();
@@ -129,23 +208,7 @@ public class WindowController implements ActionListener{
 				temperatureController.setPauseTrue();				
 				break;
 		case 5: //Save
-				try{
-					printWriter = new PrintWriter(new FileOutputStream("GreenHouseThermostat.txt"));
-				}catch(FileNotFoundException f){
-					System.out.println(f.getMessage());
-				}
-				printWriter.println("Initial temperature: " + windowGUI.getInputTemperature());
-				printWriter.println("Ambient temperature: " + windowGUI.getAmbientTemperature());
-				printWriter.println("Ambient rate: " + windowGUI.getAmbientTemperatureRate());
-				printWriter.println("Desired temperature: " + windowGUI.getDesiredTemperatue());
-				printWriter.println("Desired rate: " + windowGUI.getDesiredTemperatureRate());
-				printWriter.println("Temperature upper bound: " + windowGUI.getDesiredTemperatureUpperBound());
-				printWriter.println("Temperature lower bound: " + windowGUI.getDesiredTemperatureLowerBound());
-				printWriter.println("Temperature Refresh: " + windowGUI.getTemperatureRefresh());
-				printWriter.println("--------");
-				printWriter.println("Current temperature: " + windowGUI.getTemperatureLabel());
-				printWriter.println("Current rate: " + windowGUI.getTemperatureRate());
-				printWriter.close();
+				saveThermostat();
 				break;
 		case 6:	//Load
 				break;
@@ -154,16 +217,10 @@ public class WindowController implements ActionListener{
 				break;
 				
 		case 8: //Use soil moisture from text field
-				moistureController.setCurrentState(windowGUI.getInputMoisture());
+				setMoisture();
 				break;
 		case 9: //Use other variables from text fields
-				moistureController.setAmbientState(windowGUI.getAmbientMoisture());
-				moistureController.setAmbientRate(windowGUI.getAmbientMoistureRate());
-				moistureController.setDesiredState(windowGUI.getDesiredMoisture());
-				moistureController.setDesiredRate(windowGUI.getDesiredMoistureRate());
-				moistureController.setDesiredUpperBound(windowGUI.getDesiredMoistureUpperBound());
-				moistureController.setDesiredLowerBound(windowGUI.getDesiredMoistureLowerBound());
-				moistureController.setRefresh(windowGUI.getMoistureRefresh());
+				setSprinklerVariables();
 				break;
 		case 10://Run or resume sprinkler thread
 				moistureController.setPauseFalse();
@@ -172,23 +229,7 @@ public class WindowController implements ActionListener{
 				moistureController.setPauseTrue();
 				break;
 		case 12://Save
-				try{
-					printWriter = new PrintWriter(new FileOutputStream("GreenHouseSprinkler.txt"));
-				}catch(FileNotFoundException f){
-					System.out.println(f.getMessage());
-				}
-				printWriter.println("Initial soil moisture: " + windowGUI.getInputMoisture());
-				printWriter.println("Ambient soil moisture: " + windowGUI.getAmbientMoisture());
-				printWriter.println("Ambient rate: " + windowGUI.getAmbientMoistureRate());
-				printWriter.println("Desired soil moisture: " + windowGUI.getDesiredMoisture());
-				printWriter.println("Desired rate: " + windowGUI.getDesiredMoistureRate());
-				printWriter.println("Soil moisture upper bound: " + windowGUI.getDesiredMoistureUpperBound());
-				printWriter.println("Soil moisture lower bound: " + windowGUI.getDesiredMoistureLowerBound());
-				printWriter.println("Soil moisture Refresh: " + windowGUI.getMoistureRefresh());
-				printWriter.println("--------");
-				printWriter.println("Current soil moisture: " + windowGUI.getMoistureLabel());
-				printWriter.println("Current rate: " + windowGUI.getMoistureRateLabel());
-				printWriter.close();
+				saveSprinkler();
 				break;
 		case 13://Load
 				break;
@@ -197,16 +238,10 @@ public class WindowController implements ActionListener{
 				break;
 				
 		case 15://Use humidity from text field
-				humidityController.setCurrentState(windowGUI.getInputHumidity());
+				setHumidity();
 				break;
 		case 16://Use other variables from text fields
-				humidityController.setAmbientState(windowGUI.getAmbientHumidity());
-				humidityController.setAmbientRate(windowGUI.getAmbientHumidityRate());
-				humidityController.setDesiredState(windowGUI.getDesiredHumidity());
-				humidityController.setDesiredRate(windowGUI.getDesiredHumidityRate());
-				humidityController.setDesiredUpperBound(windowGUI.getDesiredHumidityUpperBound());
-				humidityController.setDesiredLowerBound(windowGUI.getDesiredHumidityLowerBound());
-				humidityController.setRefresh(windowGUI.getHumidityRefresh());
+				setHumidifierVariables();
 				break;
 		case 17://Run or resume humidifier thread
 				humidityController.setPauseFalse();
@@ -215,23 +250,7 @@ public class WindowController implements ActionListener{
 				humidityController.setPauseTrue();
 				break;
 		case 19://Save
-				try{
-					printWriter = new PrintWriter(new FileOutputStream("GreenHouseHumidifier.txt"));
-				}catch(FileNotFoundException f){
-					System.out.println(f.getMessage());
-				}
-				printWriter.println("Initial humidity: " + windowGUI.getInputHumidity());
-				printWriter.println("Ambient humidity: " + windowGUI.getAmbientHumidity());
-				printWriter.println("Ambient rate: " + windowGUI.getAmbientHumidityRate());
-				printWriter.println("Desired humidity: " + windowGUI.getDesiredHumidity());
-				printWriter.println("Desired rate: " + windowGUI.getDesiredHumidityRate());
-				printWriter.println("Humidity upper bound: " + windowGUI.getDesiredHumidityUpperBound());
-				printWriter.println("Humidity lower bound: " + windowGUI.getDesiredHumidityLowerBound());
-				printWriter.println("Humidity Refresh: " + windowGUI.getHumidityRefresh());
-				printWriter.println("--------");
-				printWriter.println("Current humidity: " + windowGUI.getHumidityLabel());
-				printWriter.println("Current rate: " + windowGUI.getHumidityRateLabel());
-				printWriter.close();
+				saveHumidifier();
 				break;
 		case 20://Load
 				break;
